@@ -27,7 +27,7 @@ setup(name='api_stats',
       license='BSD',
       keywords=['api', 'log', 'record', 'stats', 'statistics', 'graph'],
       classifiers=[
-          'Development Status :: 1 - Planning',
+          'Development Status :: 3 - Alpha',
           'Intended Audience :: Developers',
           'Intended Audience :: System Administrators',
           'License :: OSI Approved :: BSD License',
