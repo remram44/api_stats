@@ -13,6 +13,8 @@ with io.open('README.rst', encoding='utf-8') as fp:
 setup(name='api_stats',
       version='0.1',
       py_modules=['api_stats'],
+      entry_points={'console_scripts': [
+          'api_stats = api_stats:main']},
       description="Record historical statistics from an API that only offers "
                   "current numbers.",
       install_requires=['requests'],
