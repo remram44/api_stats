@@ -11,7 +11,7 @@ with io.open('README.rst', encoding='utf-8') as fp:
     description = fp.read()
 
 setup(name='api_stats',
-      version='0.1',
+      version='0.2',
       py_modules=['api_stats'],
       entry_points={'console_scripts': [
           'api_stats = api_stats:main']},
