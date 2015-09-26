@@ -19,6 +19,12 @@ PY3 = sys.version_info[0] == 3
 
 if PY3:
     iteritems = dict.items
+
+    def execfile(filename, globals, locals):
+        with open(filename, 'rb') as fp:
+            code = fp.read()
+        code = compile(code, filename, 'exec')
+        exec(code, globals, locals)
 else:
     iteritems = dict.iteritems
 
@@ -43,18 +49,13 @@ def process_configuration(data_output, configuration_file):
     """
     stats = StatisticsRecorder()
 
+    env = {'stats': stats}
     try:
-        with open(configuration_file, 'rb') as fp:
-            code = fp.read()
+        execfile(configuration_file, env, env)
     except IOError as e:
         logger.critical("Cannot open configuration file: %s", e)
         sys.exit(1)
 
-    env = {'stats': stats}
-    if PY3:
-        exec(code, env, env)
-    else:
-        exec('exec code in env, env')
     logger.info("Recorded %d values", len(stats.recorded_values))
 
     if data_output is None:
@@ -108,7 +109,7 @@ def main():
     locale.setlocale(locale.LC_ALL, '')
 
     parser = argparse.ArgumentParser(
-        description="api_stats records the history of some data retrived "
+        description="api_stats records the history of some data retrieved "
                     "from an API")
     parser.add_argument('-v', '--verbose', action='count', default=1,
                         dest='verbosity',
