@@ -66,9 +66,9 @@ def process_configuration(data_output, configuration_file):
                 logger.debug("%s = %r", key, value)
     else:
         if PY3:
-            fp = open(data_output, 'w', encoding='utf-8', newline='\n')
+            fp = open(data_output, 'a', encoding='utf-8', newline='\n')
         else:
-            fp = open(data_output, 'wb')
+            fp = open(data_output, 'ab')
         try:
             json.dump({'format': 1,
                        'date': datetime.now().isoformat(),
