@@ -8,7 +8,9 @@ Quickstart
 
 api_stats loads a "configuration file" that tells it what to fetch and which fields to record. This file is a Python script that will be loaded by api_stats, with a single global ``stats`` that acts as the interface with the program. This interface currently offers two functions: ``record(key, value)``, and ``get_json(url)``.
 
-Here is an example configuration file, that records the number of downloads of each file from GitHub releases::
+Here is an example configuration file, that records the number of downloads of each file from GitHub releases:
+
+..  code-block:: python
 
     releases = stats.get_json(
         "https://api.github.com/repos/remram44/api_stats/releases")
@@ -18,14 +20,18 @@ Here is an example configuration file, that records the number of downloads of e
             stats.record('%s/%s' % (relname, asset['name']),
                          asset['download_count'])
 
-Then you can plot the data, for example using matplotlib::
+Then you can plot the data, for example using matplotlib:
+
+..  code-block:: bash
 
     python -m api_stats.plot -m '^(.+)$' 'api_stats:\g<1>' data.jsonl
 
 A more complex example
 ----------------------
 
-You might want to use functions to factor the retrieval of data points from a specific source::
+You might want to use functions to factor the retrieval of data points from a specific source:
+
+..  code-block:: python
 
     def github(repo):
         releases = stats.get_json(
@@ -55,7 +61,9 @@ You might want to use functions to factor the retrieval of data points from a sp
     pypi('VisTrails')
     pypi('api_stats')
 
-This will record data under ``pypi/<pkg_name>/<version>/<filename>`` and ``github/<owner>/<repo>/<version>/<filename>``. You can then plot the data, one figure per project, aggregated by version but adding PyPI and GitHub together, using::
+This will record data under ``pypi/<pkg_name>/<version>/<filename>`` and ``github/<owner>/<repo>/<version>/<filename>``. You can then plot the data, one figure per project, aggregated by version but adding PyPI and GitHub together, using:
+
+..  code-block:: bash
 
     python -m api_stats.plot \
         -m '^pypi/([^/]+)/([^/]+)/.+$' '\g<1>:\g<2>' \
