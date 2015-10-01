@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from __future__ import absolute_import, division, unicode_literals
 
 import argparse
@@ -9,24 +8,8 @@ import logging
 import requests
 import sys
 
-
-__version__ = '0.2'
-
-logger = logging.getLogger('api_stats')
-
-
-PY3 = sys.version_info[0] == 3
-
-if PY3:
-    iteritems = dict.items
-
-    def execfile(filename, globals, locals):
-        with open(filename, 'rb') as fp:
-            code = fp.read()
-        code = compile(code, filename, 'exec')
-        exec(code, globals, locals)
-else:
-    iteritems = dict.iteritems
+from api_stats import logger, setup_logging
+from api_stats.utils import PY3, iteritems
 
 
 class StatisticsRecorder(object):
@@ -82,26 +65,6 @@ def process_configuration(data_output, configuration_file):
             fp.close()
 
 
-def setup_logging(verbosity):
-    """Sets up the logging module to log to the console.
-    """
-    levels = [logging.CRITICAL, logging.WARNING, logging.INFO, logging.DEBUG]
-    level = levels[min(verbosity, len(levels) - 1)]
-
-    # Formatter
-    fmt = "%(asctime)s %(levelname)s: %(message)s"
-    formatter = logging.Formatter(fmt)
-
-    # Console logger
-    handler = logging.StreamHandler()
-    handler.setLevel(level)
-    handler.setFormatter(formatter)
-
-    logging.root.setLevel(level)
-    logging.root.handlers = []
-    logging.root.addHandler(handler)
-
-
 def main():
     """Entry point when called on the command-line.
     """
@@ -130,7 +93,3 @@ def main():
 
     process_configuration(None if args.dry_run else args.data,
                           args.configuration)
-
-
-if __name__ == '__main__':
-    main()
