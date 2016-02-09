@@ -118,7 +118,7 @@ def main():
             graph.plot(x, y, '-o', label=label)
             graph.xaxis.set_major_locator(MonthLocator())
             graph.xaxis.set_minor_locator(DayLocator())
-            graph.xaxis.set_major_formatter(DateFormatter('%Y-%m'))
+            graph.xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))
             graph.legend()
 
     plt.show()
