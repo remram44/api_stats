@@ -4,8 +4,8 @@ import argparse
 from datetime import datetime
 import json
 import locale
+import matplotlib
 from matplotlib.dates import date2num, MonthLocator, DayLocator, DateFormatter
-import matplotlib.pyplot as plt
 import re
 import sys
 
@@ -34,6 +34,8 @@ def main():
                         help="augments verbosity level")
     parser.add_argument('-m', action='append', dest='maps', nargs=2,
                         default=[], help="map input data to a plot")
+    parser.add_argument('-o', '--output', action='store_true', default=False,
+                        help="Output to PNG files")
     parser.add_argument('data', help="file from which to read the data")
 
     args = parser.parse_args()
@@ -73,6 +75,9 @@ def main():
     finally:
         fp.close()
 
+    if args.output:
+        matplotlib.use('Agg')
+
     plots = {}  # dict(title:str, dict(key:tuple, dict(date:str, value:float)))
 
     for key, values in iteritems(lines):
@@ -83,6 +88,8 @@ def main():
         else:
             title = None
         plots.setdefault(title, {})[tuple(key)] = values
+
+    import matplotlib.pyplot as plt
 
     for title, plot in iteritems(plots):
         logger.info("Creating figure %s", title)
@@ -103,8 +110,10 @@ def main():
             graph.xaxis.set_minor_locator(DayLocator())
             graph.xaxis.set_major_formatter(DateFormatter('%Y-%m'))
             graph.legend()
+        fig.savefig('%s.png' % title)
 
-    plt.show()
+    if not args.output:
+        plt.show()
 
 
 if __name__ == '__main__':
