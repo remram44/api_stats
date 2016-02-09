@@ -34,6 +34,8 @@ def main():
                         help="augments verbosity level")
     parser.add_argument('-m', action='append', dest='maps', nargs=2,
                         default=[], help="map input data to a plot")
+    parser.add_argument('-b', action='store', dest='baseline',
+                        default=None, help="baseline key")
     parser.add_argument('data', help="file from which to read the data")
 
     args = parser.parse_args()
@@ -43,6 +45,8 @@ def main():
     # Compile mappings
     maps = [(re.compile(r_from), r_to) for r_from, r_to in args.maps]
 
+    r_baseline = re.compile(args.baseline) if args.baseline else None
+
     lines = {}  # dict(key:str, dict(date:str, value:float))
 
     if PY3:
@@ -50,6 +54,8 @@ def main():
     else:
         fp = open(args.data, 'rb')
     try:
+        baseline = 0
+        baseline_first = None
         nb_lines = 0
         for line in fp:
             if not line:
@@ -61,6 +67,12 @@ def main():
                                 data['format'])
                 sys.exit(1)
             date = data['date']
+            # Read baseline
+            if r_baseline is not None:
+                for key, value in iteritems(data['values']):
+                    if r_baseline.search(key):
+                        baseline = value
+            # Read data
             for key, value in iteritems(data['values']):
                 for r_from, r_to in maps:
                     new_key, subs = r_from.subn(r_to, key)
@@ -68,7 +80,8 @@ def main():
                         logger.debug("MAP: %s -> %s", key, new_key)
                         assert isinstance(value, (long, int, float))
                         this_line = lines.setdefault(new_key, {})
-                        this_line[date] = this_line.get(date, 0) + value
+                        this_line[date] = \
+                            this_line.get(date, 0) + value - baseline
         logger.info("Read %d lines", nb_lines)
     finally:
         fp.close()
@@ -94,8 +107,12 @@ def main():
             logger.info("Plotting %s", label)
             x = []
             y = []
+            first = None
             for k, v in sorted((date2num(parse_date(k)), v)
                                for k, v in iteritems(line)):
+                if first is None:
+                    first = v
+                #v -= first
                 x.append(k)
                 y.append(v)
             graph.plot(x, y, '-o', label=label)
