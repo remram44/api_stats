@@ -98,7 +98,7 @@ def main():
                                for k, v in iteritems(line)):
                 x.append(k)
                 y.append(v)
-            graph.plot(x, y, '-o', label=label)
+            graph.plot(x, y, '-', label=label)
             graph.xaxis.set_major_locator(MonthLocator())
             graph.xaxis.set_minor_locator(DayLocator())
             graph.xaxis.set_major_formatter(DateFormatter('%Y-%m'))
