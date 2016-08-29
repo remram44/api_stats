@@ -22,9 +22,19 @@ class StatisticsRecorder(object):
         logger.debug("record: %r = %r", key, value)
         self.recorded_values[key] = value
 
-    def get_json(self, url):
+    def get_json(self, url, **kwargs):
         logger.info("Downloading JSON from %s", url)
-        return requests.get(url).json()
+        return requests.get(url, **kwargs).json()
+
+    def request(self, method, url, **kwargs):
+        logger.info("%s %s", method, url)
+        return requests.request(method, url, **kwargs)
+
+    def get(self, url, **kwargs):
+        return self.request('GET', url, **kwargs)
+
+    def post(self, url, **kwargs):
+        return self.request('POST', url, **kwargs)
 
 
 def process_configuration(data_output, configuration_file):
