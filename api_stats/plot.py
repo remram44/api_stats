@@ -78,16 +78,21 @@ def main():
     if args.output:
         matplotlib.use('Agg')
 
-    plots = {}  # dict(title:str, dict(key:tuple, dict(date:str, value:float)))
+    # dict(title:str, dict(key:tuple, (dict(date:str, value:float),
+    #                                  options:str)))
+    plots = {}
 
     for key, values in iteritems(lines):
+        options = '-'
+        if '^' in key:
+            key, options = key.split('^', 1)
         key = key.split(':')
         if len(key) > 1:
             title = key[0]
             key = key[1:]
         else:
             title = None
-        plots.setdefault(title, {})[tuple(key)] = values
+        plots.setdefault(title, {})[tuple(key)] = values, options
 
     import matplotlib.pyplot as plt
 
@@ -96,7 +101,7 @@ def main():
         fig = plt.figure()
         graph = fig.add_subplot(111)
         plt.title(title)
-        for key, line in iteritems(plot):
+        for key, (line, options) in iteritems(plot):
             label = ':'.join(key)
             logger.info("Plotting %s", label)
             x = []
@@ -105,11 +110,12 @@ def main():
                                for k, v in iteritems(line)):
                 x.append(k)
                 y.append(v)
-            graph.plot(x, y, '-', label=label)
-            graph.xaxis.set_major_locator(MonthLocator())
-            graph.xaxis.set_minor_locator(DayLocator())
-            graph.xaxis.set_major_formatter(DateFormatter('%Y-%m'))
-            graph.legend()
+            graph.plot(x, y, options, label=label)
+#        graph.xaxis.set_major_locator(MonthLocator())
+#        graph.xaxis.set_minor_locator(DayLocator())
+        graph.xaxis.set_major_formatter(DateFormatter("%m-%d"))
+        graph.legend(loc=2)
+        graph.set_ylim(bottom=0)
         fig.savefig('%s.png' % title)
 
     if not args.output:
