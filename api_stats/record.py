@@ -64,7 +64,7 @@ def process_configuration(data_output, configuration_file):
             fp = open(data_output, 'ab')
         try:
             json.dump({'format': 1,
-                       'date': datetime.now().isoformat(),
+                       'date': datetime.utcnow().isoformat(),
                        'values': stats.recorded_values},
                       fp,
                       ensure_ascii=True,
